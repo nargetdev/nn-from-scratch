@@ -3,10 +3,26 @@ import numpy as np
 from sklearn import datasets, linear_model
 import matplotlib.pyplot as plt
 
+from sklearn.datasets import fetch_mldata
+
+
+def show(image):
+    """
+    Render a given numpy.uint8 2D array of pixel data.
+    """
+    from matplotlib import pyplot
+    import matplotlib as mpl
+    fig = pyplot.figure()
+    ax = fig.add_subplot(1,1,1)
+    imgplot = ax.imshow(image, cmap=mpl.cm.Greys)
+    imgplot.set_interpolation('nearest')
+    ax.xaxis.set_ticks_position('top')
+    ax.yaxis.set_ticks_position('left')
+    pyplot.show()
 
 class Config:
-    nn_input_dim = 2  # input layer dimensionality
-    nn_output_dim = 2  # output layer dimensionality
+    nn_input_dim = 784  # input layer dimensionality
+    nn_output_dim = 10  # output layer dimensionality
     # Gradient descent parameters (I picked these by hand)
     epsilon = 0.01  # learning rate for gradient descent
     reg_lambda = 0.01  # regularization strength
@@ -14,7 +30,24 @@ class Config:
 
 def generate_data():
     np.random.seed(0)
-    X, y = datasets.make_moons(200, noise=0.20)
+    custom_data_home = "/Users/tanedev/A_DEV/neural_networks/tmp_data"
+    mnist = fetch_mldata('MNIST original', data_home=custom_data_home)
+
+
+    # which one?
+    i = 69999
+
+    # generate and show 2d pic
+    pic = mnist['data'][i]
+    img2d = np.reshape(pic, [28,28])
+    show(img2d)
+
+    # show corresponding label
+    print(mnist['target'][i])
+
+    # X, y = datasets.make_moons(200, noise=0.20)
+    X = mnist['data']
+    y = mnist['target']
     return X, y
 
 
@@ -136,7 +169,7 @@ def classify(X, y):
 
 def main():
     X, y = generate_data()
-    model = build_model(X, y, 3, print_loss=True)
+    model = build_model(X, y, 10, print_loss=True)
     visualize(X, y, model)
 
 
